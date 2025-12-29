@@ -139,5 +139,3 @@ sudo pkill -9 iperf3
 Lalu jalankan script kembali.
 
 ---
-
-**Dibuat oleh:** Verindra Hernanda Putra
