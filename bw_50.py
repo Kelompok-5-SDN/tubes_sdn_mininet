@@ -2,12 +2,11 @@ from mininet.net import Mininet
 from mininet.node import OVSSwitch, RemoteController, Host
 from mininet.link import TCLink
 from mininet.log import setLogLevel, info
+from mininet.cli import CLI
 import time
-import json
 
 def run():
-    bandwidth = 600 # Variabel Bebas
-    traffic_load = 1000 # Nilai Konstan
+    bandwidth = 50
 
     info("Menyiapkan Jaringan Mininet...\n")
     net = Mininet(
@@ -34,8 +33,8 @@ def run():
     h4 = net.addHost('h4', cls=Host, ip='10.0.0.4', defaultRoute=None)
     h5 = net.addHost('h5', cls=Host, ip='10.0.0.5', defaultRoute=None)
     
-    info(f"Konfigurasi Link: Bandwidth {bandwidth} Mbps, Delay 1ms...\n")
-    link_config = {'bw': bandwidth, 'delay': '1ms', 'max_queue_size': 100}
+    info(f"Konfigurasi Link: Bandwidth {bandwidth} Mbps...\n")
+    link_config = {'bw': bandwidth, 'delay': '1', 'max_queue_size': 100}
 
     info("Menambahkan Link Host ke Switch...\n")
     net.addLink(h1, s1, **link_config)
@@ -66,55 +65,12 @@ def run():
     net.get('s5').start([c0])
 
     print("-> Menunggu Ryu Controller...")
-    time.sleep(40)
+    time.sleep(5)
 
-    info("Menyalakan server iperf3...\n")
-    h5.cmd('iperf3 -s -D') 
-    time.sleep(2)
+    info("*** Running CLI\n")
+    CLI(net)
 
-    info("\nMenyiapkan Pengujian Throughput dan Delay...\n")
-    print(f"=== MULAI PENGAMBILAN DATA (Bandwidth: {bandwidth} Mbps vs Traffic Load: {traffic_load} Mbps) ===")
-    print(" Sampel | Throughput (Mbps) | Packet Loss (%) | Latency Ping (ms) ")
-
-    for i in range(1, 11):
-        cmd_iperf = f'iperf3 -c 10.0.0.5 -u -b {traffic_load}M -t 4 -J'
-        json_output = h1.cmd(cmd_iperf)
-        rx_throughput = 0
-        loss_pct = 0
-        
-        try:
-            data = json.loads(json_output)
-            
-            if 'end' in data and 'sum' in data['end']:
-                summary = data['end']['sum']
-                rx_throughput = summary['bits_per_second'] / 1000000
-                loss_pct = summary['lost_percent']
-            else:
-                print(f"  #{i:<2}   |   Gagal mendapatkan data summary (Network Down?)")
-                continue
-                
-        except json.JSONDecodeError:
-            print(f"  #{i:<2}   |   Error Parsing JSON (Cek apakah server H5 menyala)")
-            continue
-
-        hasil_ping = h1.cmd('ping -c 1 -W 5 10.0.0.5')
-        
-        try:
-            p_time = hasil_ping.find('time=')
-            if p_time != -1:
-                end_pos = hasil_ping.find(' ms', p_time)
-                delay = hasil_ping[p_time+5 : end_pos].strip()
-            else:
-                delay = "RTO"
-        except:
-            delay = "Err"
-
-        print(f"  #{i:<2}   |      {rx_throughput:6.2f}       |     {loss_pct:6.2f} %   |     {delay}")
-        
-        time.sleep(1)
-
-    print("\n=== SELESAI ===")
-    
+    info("Menghentikan Jaringan...\n")
     net.stop()
 
 if __name__ == '__main__':
