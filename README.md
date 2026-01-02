@@ -148,6 +148,7 @@ Jalankan tahapan berikut untuk satu skenario, setelah selesai ulangi langkah dar
    ```
    -s: Server, memerintahkan iperf untuk diam dan mendengarkan (listen) koneksi yang masuk
    -i 1: menampilkan laporan di terminal client setiap 1 detik.
+   - **Note:** jika selama pengujian terjadi error, misalkan "File Descriptor Error" dll. ctrl+c lalu jalankan ulang langkah ini "iperf3 -s -i 1"
 8. Pada h1 (sebagai sender | 10.0.0.1), jalankan
    ```bash
      iperf3 -c 10.0.0.5 -u -b 60M -t 30 -i 1
