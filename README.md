@@ -158,7 +158,7 @@ Jalankan tahapan berikut untuk satu skenario, setelah selesai ulangi langkah dar
      -b 60M: Nilai Konstan (Inject 60 Mbps).
      -t 20: Durasi 30 detik.
      -i 1: menampilkan laporan di terminal client setiap 1 detik.
-8. Ulangi langkah 6 dan 7 sebanyak 10 kali, lalu ambil nilai akhir Bitrate pada Receiver sebagai variabel **Throughtput** dan nilai akhir presentase Lost/TotalDatagrams sebagai variabel **Packet Loss**
+8. Ulangi langkah 7 sebanyak 10 kali, lalu ambil nilai akhir Bitrate pada Receiver sebagai variabel **Throughtput** dan nilai akhir presentase Lost/TotalDatagrams sebagai variabel **Packet Loss**
      <img width="497" height="541" alt="image" src="https://github.com/user-attachments/assets/2ef0854e-aa26-4782-96c0-c2d1062df859" />
 9. Dari 10 sampel tersebut ambil rata-rata masing-masing variabel QoS
 10. Selesai
