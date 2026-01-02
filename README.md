@@ -149,7 +149,7 @@ Jalankan tahapan berikut untuk satu skenario, setelah selesai ulangi langkah dar
    -s: Server, memerintahkan iperf untuk diam dan mendengarkan (listen) koneksi yang masuk
    -i 1: menampilkan laporan di terminal client setiap 1 detik.
    - **Note:** jika selama pengujian terjadi error, misalkan "File Descriptor Error" dll. ctrl+c lalu jalankan ulang langkah ini "iperf3 -s -i 1"
-8. Pada h1 (sebagai sender | 10.0.0.1), jalankan
+7. Pada h1 (sebagai sender | 10.0.0.1), jalankan
    ```bash
      iperf3 -c 10.0.0.5 -u -b 60M -t 30 -i 1
    ```
@@ -158,7 +158,13 @@ Jalankan tahapan berikut untuk satu skenario, setelah selesai ulangi langkah dar
      -b 60M: Nilai Konstan (Inject 60 Mbps).
      -t 20: Durasi 30 detik.
      -i 1: menampilkan laporan di terminal client setiap 1 detik.
-9. Ulangi langkah 6 dan 7 sebanyak 10 kali, lalu ambil nilai akhir Bitrate pada Receiver sebagai variabel **Throughtput** dan nilai akhir presentase Lost/TotalDatagrams sebagai variabel **Packet Loss**
+8. Ulangi langkah 6 dan 7 sebanyak 10 kali, lalu ambil nilai akhir Bitrate pada Receiver sebagai variabel **Throughtput** dan nilai akhir presentase Lost/TotalDatagrams sebagai variabel **Packet Loss**
      <img width="497" height="541" alt="image" src="https://github.com/user-attachments/assets/2ef0854e-aa26-4782-96c0-c2d1062df859" />
-10. Dari 10 sampel tersebut ambil rata-rata masing-masing variabel QoS
-11. Selesai
+9. Dari 10 sampel tersebut ambil rata-rata masing-masing variabel QoS
+10. Selesai
+
+**Note:**
+- Jalankan command berikut pada terminal Lubuntu (bukan pada xterm atau mininet>) setelah uji coba satu skenario selesai dan ingin berganti ke skenario lain untuk refresh ulang topologi dan jaringan
+```bash
+     sudo mn -c
+```
