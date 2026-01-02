@@ -115,50 +115,49 @@ Pilih skenario bandwidth yang ingin diuji, misalnya 10 Mbps. Gunakan sudo.
 sudo python3 bw_10.py
 ```
 
-## ⏳ Alur Proses secara Manual
+## ⏳ Alur Proses Kerja Script
 
-Script akan berjalan otomatis dengan tahapan berikut:
+Script akan berjalan dengan tahapan berikut:
 
-1. **Setup Topologi:** Membangun Switch, Host, dan Link
-2. **Convergence Time:** Script akan menunggu selama 40 detik (time.sleep(40))
-   - **Penting:** Jangan batalkan proses ini. Waktu ini diperlukan agar protokol STP di Controller selesai menghitung jalur terbaik dan memblokir port yang menyebabkan loop
-3. **Stress Testing:** Mengirim trafik UDP sebesar 1000 Mbps dari Host 1 ke Host 5
-4. **Data Collection:** Mengambil 10 sampel Throughput, Packet Loss, dan Latency secara otomatis
+1. **Setup Topologi:** Membangun Switch, Host, dan Link sesuai spesifikasi (Otomatis dari script)
+2. **CLI(Net):** Script akan membuka terminal mininet (Disini kita akan melakukan berbagai testing secara manual)
+   - **Note:** jalankan "exit" jika sudah selesai pengujian untuk testing skenario lain atau finish
+  
+## ⏳🛠️ Alur Proses Kerja di dalam CLI(Net) untuk masing-masing skenario
 
-## 📊 Contoh Output Data
+Jalankan tahapan berikut untuk satu skenario, setelah selesai ulangi langkah dari awal lagi untuk skenario baru:
 
-Script akan menghasilkan tabel data real-time di terminal:
-```
-=== MULAI PENGAMBILAN DATA (Bandwidth: 500 Mbps vs Traffic Load: 1000 Mbps) ===
-
-Sampel | Throughput (Mbps) | Packet Loss (%) | Latency Ping (ms)
-#1     | 498.50            | 50.15 %         | 15.20
-#2     | 499.10            | 49.90 %         | 14.80
-...
-```
-
-**Analisis:** Karena Beban (1000 Mbps) lebih besar dari Kapasitas Link (500 Mbps), maka Packet Loss akan tinggi (~50%), yang menunjukkan simulasi berjalan benar.
-
-## 🔧 Troubleshooting
-
-### 1. Latency tertulis "RTO"
-
-- Ini wajar jika jaringan sangat padat.
-- Script menggunakan timeout 5 detik (-W 5) untuk mencoba mendapatkan angka latency sebisa mungkin sebelum terjadi RTO
-
-### 2. Script diam lama di awal ("Menunggu Ryu Controller...")
-
-- Script diprogram tidur selama 40 detik agar jaringan stabil sebelum pengambilan data dimulai
-
-### 3. Error "JSONDecodeError" atau "Connection Refused"
-
-- Biasanya terjadi jika Server Iperf3 di Host 5 gagal menyala
-- **Solusi:** Bersihkan sisa-sisa proses mininet dengan perintah:
-```bash
-sudo mn -c
-sudo pkill -9 iperf3
-```
-
-Lalu jalankan script kembali.
-
----
+1. Pastikan Ryu Controller sudah running pada terminal lainnya
+2. Jalankan **"pingall"** untuk memastikan topologi sudah tersambung dengan benar
+   <img width="407" height="167" alt="image" src="https://github.com/user-attachments/assets/e28bfbbf-155b-41f1-b3cf-41d3fe6762b0" />
+   - Contoh Jika Benar ✅ : ... Results: 0% dropped (20/20 received)
+   - Contoh Jika Salah ❌ : ... Results: >0% dropped (<20/20 received) (Dropped diatas 0% dan Received kurang dari maksimal)
+3. Jalankan **links** untuk memastikan struktur topologi sudah sesuai dengan yang kita rancang (Opsional)
+   <img width="265" height="223" alt="image" src="https://github.com/user-attachments/assets/3b8f99e1-be3b-42f1-9e60-24e75aedd358" />
+4. Jalankan **xterm h1 h5** untuk membuka terminal xterm pada host 1 dan host 5
+   <img width="1094" height="356" alt="image" src="https://github.com/user-attachments/assets/711293cb-71cd-4070-8c59-3833d46142a2" />
+   - **Note:** skenario akan ditest dengan h1 sebagai sender dan h5 sebagai receiver
+5. Pada h1, jalankan command berikut untuk mendapatkan delay (Ambil nilai rtt avg sebagai variabel Delay | Jalankan sebanyak 10 kali)
+   ```bash
+     ping 10.0.0.5 -c 10
+   ```
+   <img width="391" height="211" alt="image" src="https://github.com/user-attachments/assets/0c027568-ff7a-4c88-bbff-2c38f80ae480" />
+6. Pada h5 (sebagai receiver | 10.0.0.5), jalankan
+   ```bash
+     iperf3 -s -i 1
+   ```
+   -s: Server, memerintahkan iperf untuk diam dan mendengarkan (listen) koneksi yang masuk
+   -i 1: menampilkan laporan di terminal client setiap 1 detik.
+8. Pada h1 (sebagai sender | 10.0.0.1), jalankan
+   ```bash
+     iperf3 -c 10.0.0.5 -u -b 60M -t 30 -i 1
+   ```
+     -c 10.0.0.5: Connect ke h5.
+     -u: Mode UDP.
+     -b 60M: Nilai Konstan (Inject 60 Mbps).
+     -t 20: Durasi 30 detik.
+     -i 1: menampilkan laporan di terminal client setiap 1 detik.
+9. Ulangi langkah 6 dan 7 sebanyak 10 kali, lalu ambil nilai akhir Bitrate pada Receiver sebagai variabel Throughtput dan nilai akhir presentase Lost/TotalDatagrams sebagai Delay
+   <img width="497" height="541" alt="image" src="https://github.com/user-attachments/assets/2ef0854e-aa26-4782-96c0-c2d1062df859" />
+10. Dari 10 sampel tersebut ambil rata-rata masing-masing variabel QoS
+11. Selesai
