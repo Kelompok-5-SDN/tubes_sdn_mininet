@@ -83,7 +83,7 @@ cd tubes_sdn_mininet
 
 ## 📂 Konfigurasi Skenario
 
-Script dalam repository ini dirancang untuk menguji Kapasitas Link yang berbeda-beda terhadap Traffic Load Konstan (1000 Mbps) untuk melihat perilaku jaringan saat macet (Congestion).
+Script dalam repository ini dirancang untuk menguji Kapasitas Link yang berbeda-beda terhadap Traffic Inject Konstan (60 Mbps) untuk melihat perilaku jaringan saat macet (Congestion).
 
 | Nama File | Kapasitas Link (Jalan) | Traffic Injected |
 |-----------|------------------------|--------------|
@@ -159,6 +159,6 @@ Jalankan tahapan berikut untuk satu skenario, setelah selesai ulangi langkah dar
      -t 20: Durasi 30 detik.
      -i 1: menampilkan laporan di terminal client setiap 1 detik.
 9. Ulangi langkah 6 dan 7 sebanyak 10 kali, lalu ambil nilai akhir Bitrate pada Receiver sebagai variabel Throughtput dan nilai akhir presentase Lost/TotalDatagrams sebagai Delay
-   <img width="497" height="541" alt="image" src="https://github.com/user-attachments/assets/2ef0854e-aa26-4782-96c0-c2d1062df859" />
+<img width="497" height="541" alt="image" src="https://github.com/user-attachments/assets/2ef0854e-aa26-4782-96c0-c2d1062df859" />
 10. Dari 10 sampel tersebut ambil rata-rata masing-masing variabel QoS
 11. Selesai
